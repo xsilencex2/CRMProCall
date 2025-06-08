@@ -1,218 +1,133 @@
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>МиниЦРМ: Контакты и Звонки</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { 
-            background-color: #f4f4f4;
-            padding: 0;
-        }
-        .container {
-            padding: 0 6px;
-            margin-top: 12px;
-        }
-        .client-card {
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-        }
-        .client-card:hover {
-            transform: scale(1.02);
-        }
-        textarea.form-control {
-            min-height: 56px;
-        }
-        .form-control,
-        .form-select {
-            font-size: 1rem;
-            padding: 0.44rem 0.75rem;
-        }
-        .btn-sm {
-            margin-right: 5px;
-        }
-        /* Adaptive adjustments for mobile devices */
-        @media (max-width: 767px) {
-            h1 {
-                font-size: 1.4rem;
-            }
-            .card {
-                margin-bottom: 1rem;
-            }
-            .form-control,
-            .form-select {
-                font-size: 1.05rem;
-                padding: 0.4rem 0.75rem;
-            }
-            .client-card .card-body {
-                flex-direction: column !important;
-                align-items: flex-start;
-                gap: 0.75rem;
-            }
-            .client-card .card-body > div:not(:last-child) {
-                margin-bottom: 0.4rem;
-            }
-            .client-card .d-flex.flex-column {
-                flex-direction: row !important;
-                align-items: center;
-                width: 100%;
-                justify-content: flex-end;
-            }
-            .client-card .edit-client,
-            .client-card .delete-client {
-                width: 90px;
-                font-size: 0.95rem;
-                margin: 0 3px 0 0;
-            }
-            .client-card small {
-                display: block;
-            }
-            #clientForm .mb-3 {
-                margin-bottom: 0.65rem !important;
-            }
-            #clientForm button[type=submit] {
-                width: 100%;
-                font-size: 1.05rem;
-            }
-        }
-        /* Make sidebar (form) and list stack on mobile */
-        @media (max-width: 991px) {
-            .row > .col-md-4,
-            .row > .col-md-8 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-            .row {
-                flex-direction: column !important;
-                gap: 1.2rem;
-            }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📞 МиниЦРМ</title>
+    <!-- Подключение SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Подключение FileSaver.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Bootstrap для стилей -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Основной скрипт -->
+    <script type="module" src="app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center mb-4 mt-2">📞 МиниЦРМ</h1>
-        <div class="row flex-lg-row">
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-header fw-semibold">
-                        Добавить клиента
-                    </div>
-                    <div class="card-body pb-0">
-                        <form id="clientForm" autocomplete="off">
+    <div class="container mt-4">
+        <h1>📞 МиниЦРМ</h1>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">Добавить клиента</div>
+                    <div class="card-body">
+                        <form id="clientForm">
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="clientName" placeholder="Имя" required autocomplete="off">
+                                <input type="text" class="form-control" id="clientName" placeholder="Имя клиента" required>
                             </div>
                             <div class="mb-3">
-                                <input type="tel" class="form-control" id="clientPhone" placeholder="Телефон" required autocomplete="off">
+                                <input type="tel" class="form-control" id="clientPhone" placeholder="Телефон" required>
                             </div>
                             <div class="mb-3">
-                                <input type="date" class="form-control" id="reminderDate" autocomplete="off">
+                                <input type="date" class="form-control" id="reminderDate" placeholder="Дата напоминания">
                             </div>
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="clientAddress" placeholder="Адрес" required>
+                                <input type="text" class="form-control" id="clientAddress" placeholder="Адрес">
                             </div>
                             <div class="mb-3">
-                                <select class="form-select" id="sampleFamiliarization" required>
+                                <select class="form-select" id="sampleFamiliarization">
                                     <option value="">Ознакомление с образцом</option>
                                     <option value="yes">Да</option>
                                     <option value="no">Нет</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <select class="form-select" id="assortmentConsultation" required>
+                                <select class="form-select" id="assortmentConsultation">
                                     <option value="">Консультация по ассортименту</option>
                                     <option value="consulted">Проконсультирован</option>
                                     <option value="not_consulted">Не Проконсультирован</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <select class="form-select" id="newProductsConsultation" required>
+                                <select class="form-select" id="newProductsConsultation">
                                     <option value="">Новинки товаров</option>
                                     <option value="consulted">Проконсультирован</option>
                                     <option value="not_consulted">Не Проконсультирован</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <select class="form-select" id="proposalStatus" required>
+                                <select class="form-select" id="proposalStatus">
                                     <option value="">Предложение</option>
                                     <option value="proposed">Предложили</option>
                                     <option value="not_proposed">Не предложили</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <select class="form-select" id="disclosureStatus" required>
+                                <select class="form-select" id="disclosureStatus">
                                     <option value="">Раскрой</option>
                                     <option value="proposed">Предложили</option>
                                     <option value="not_proposed">Не предложили</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="deliveryDetails" placeholder="Доставка"></textarea>
+                                <input type="text" class="form-control" id="deliveryDetails" placeholder="Доставка">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="packagingDetails" placeholder="Упаковка"></textarea>
+                                <input type="text" class="form-control" id="packagingDetails" placeholder="Упаковка">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="hingeDetails" placeholder="Петли (обычные / скрытые / доводчики)"></textarea>
+                                <input type="text" class="form-control" id="hingeDetails" placeholder="Петли">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="guideDetails" placeholder="Направляющие (Шариковые / роликовые / скрытого монтажа)"></textarea>
+                                <input type="text" class="form-control" id="guideDetails" placeholder="Направляющие">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="liftMechanismDetails" placeholder="Подъемные механизмы"></textarea>
+                                <input type="text" class="form-control" id="liftMechanismDetails" placeholder="Подъемные механизмы">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="handleDetails" placeholder="Ручки"></textarea>
+                                <input type="text" class="form-control" id="handleDetails" placeholder="Ручки">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="standSupportDetails" placeholder="Опоры / Ножки"></textarea>
+                                <input type="text" class="form-control" id="standSupportDetails" placeholder="Опоры / Ножки">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="monthlyPurchaseVolume" placeholder="Ориентированный объем закупок в месяц"></textarea>
+                                <input type="text" class="form-control" id="monthlyPurchaseVolume" placeholder="Объем/мес">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="currentProducts" placeholder="Текущие товары"></textarea>
+                                <input type="text" class="form-control" id="currentProducts" placeholder="Текущие товары">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="openToChangeProducts" placeholder="Открыт к смене товаров"></textarea>
+                                <input type="text" class="form-control" id="openToChangeProducts" placeholder="Открыт к смене товаров">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="clientDecision" placeholder="Принятие решения клиентом"></textarea>
+                                <input type="text" class="form-control" id="clientDecision" placeholder="Решение клиента">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="nextSteps" placeholder="Следующие шаги / Договоренности"></textarea>
+                                <input type="text" class="form-control" id="nextSteps" placeholder="След.шаги">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="clientInterest" placeholder="Интерес клиента"></textarea>
+                                <input type="text" class="form-control" id="clientInterest" placeholder="Интерес">
                             </div>
                             <div class="mb-3">
-                                <textarea class="form-control" id="dealPerspective" placeholder="Перспектива Сделки"></textarea>
+                                <input type="text" class="form-control" id="dealPerspective" placeholder="Перспектива">
                             </div>
-                            <button type="submit" class="btn btn-primary pb-2 pt-2 w-100">Добавить</button>
+                            <button type="submit" class="btn btn-primary">Добавить</button>
                         </form>
                     </div>
                 </div>
             </div>
-            
             <div class="col-md-8">
-                <div class="card shadow-sm">
-                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                        <span>Список клиентов</span>
-                        <button id="exportCSV" class="btn btn-sm btn-outline-secondary ms-2 mt-2 mt-md-0">Экспорт XLSX</button>
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        Список клиентов
+                        <button id="exportCSV" class="btn btn-success btn-sm">Экспорт XLSX</button>
                     </div>
-                    <div class="card-body pb-1 pt-2" id="clientsList" style="overflow-x: auto;">
-                        <!-- Динамический список клиентов -->
+                    <div class="card-body">
+                        <div id="clientsList"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS and FileSaver, SheetJS for Excel export -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <script src="app.js" type="module"></script>
 </body>
 </html>

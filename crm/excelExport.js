@@ -1,6 +1,18 @@
 import { getYesNoText, getConsultationText, getProposalText } from './fieldFormatters.js';
 
 export function exportClientsToExcel(clients) {
+    // Проверка наличия библиотек
+    if (!window.XLSX || !window.XLSX.utils) {
+        alert('Ошибка: библиотека SheetJS не загружена. Проверьте подключение xlsx.js.');
+        console.error('SheetJS library is not loaded.');
+        return;
+    }
+    if (!window.saveAs) {
+        alert('Ошибка: библиотека FileSaver.js не загружена.');
+        console.error('FileSaver.js library is not loaded.');
+        return;
+    }
+
     // Defensive: fallback in case called with undefined/null
     if (!Array.isArray(clients)) clients = [];
     const headers = [

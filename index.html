@@ -1,12 +1,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>ЦРМ: Контакты и Звонки</title>
+    <title>МиниЦРМ: Контакты и Звонки</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { 
-            padding: 20px; 
             background-color: #f4f4f4;
+            padding: 0;
+        }
+        .container {
+            padding: 0 6px;
+            margin-top: 12px;
         }
         .client-card {
             margin-bottom: 10px;
@@ -15,41 +20,94 @@
         .client-card:hover {
             transform: scale(1.02);
         }
+        textarea.form-control {
+            min-height: 56px;
+        }
+        .form-control,
+        .form-select {
+            font-size: 1rem;
+            padding: 0.44rem 0.75rem;
+        }
         .btn-sm {
             margin-right: 5px;
         }
-        textarea.form-control {
-            min-height: 80px;
+        /* Adaptive adjustments for mobile devices */
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+            .card {
+                margin-bottom: 1rem;
+            }
+            .form-control,
+            .form-select {
+                font-size: 1.05rem;
+                padding: 0.4rem 0.75rem;
+            }
+            .client-card .card-body {
+                flex-direction: column !important;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            .client-card .card-body > div:not(:last-child) {
+                margin-bottom: 0.4rem;
+            }
+            .client-card .d-flex.flex-column {
+                flex-direction: row !important;
+                align-items: center;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .client-card .edit-client,
+            .client-card .delete-client {
+                width: 90px;
+                font-size: 0.95rem;
+                margin: 0 3px 0 0;
+            }
+            .client-card small {
+                display: block;
+            }
+            #clientForm .mb-3 {
+                margin-bottom: 0.65rem !important;
+            }
+            #clientForm button[type=submit] {
+                width: 100%;
+                font-size: 1.05rem;
+            }
+        }
+        /* Make sidebar (form) and list stack on mobile */
+        @media (max-width: 991px) {
+            .row > .col-md-4,
+            .row > .col-md-8 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            .row {
+                flex-direction: column !important;
+                gap: 1.2rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center mb-4">📞ЦРМ</h1>
-        
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
+        <h1 class="text-center mb-4 mt-2">📞 МиниЦРМ</h1>
+        <div class="row flex-lg-row">
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-header fw-semibold">
                         Добавить клиента
                     </div>
-                    <div class="card-body">
-                        <form id="clientForm">
+                    <div class="card-body pb-0">
+                        <form id="clientForm" autocomplete="off">
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="clientName" placeholder="Имя" required>
+                                <input type="text" class="form-control" id="clientName" placeholder="Имя" required autocomplete="off">
                             </div>
                             <div class="mb-3">
-                                <input type="tel" class="form-control" id="clientPhone" placeholder="Телефон" required>
+                                <input type="tel" class="form-control" id="clientPhone" placeholder="Телефон" required autocomplete="off">
                             </div>
                             <div class="mb-3">
-                                <select class="form-select" id="clientStatus" required>
-                                    <option value="">Статус</option>
-                                    <option value="not_reached">Не дозвонился</option>
-                                    <option value="spoke">Поговорил</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <input type="date" class="form-control" id="reminderDate">
+                                <input type="date" class="form-control" id="reminderDate" autocomplete="off">
                             </div>
                             <div class="mb-3">
                                 <input type="text" class="form-control" id="clientAddress" placeholder="Адрес" required>
@@ -131,21 +189,19 @@
                             <div class="mb-3">
                                 <textarea class="form-control" id="dealPerspective" placeholder="Перспектива Сделки"></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary">Добавить</button>
+                            <button type="submit" class="btn btn-primary pb-2 pt-2 w-100">Добавить</button>
                         </form>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between">
-                        Список клиентов
-                        <div>
-                            <button id="exportCSV" class="btn btn-sm btn-outline-secondary">Экспорт CSV</button>
-                        </div>
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                        <span>Список клиентов</span>
+                        <button id="exportCSV" class="btn btn-sm btn-outline-secondary ms-2 mt-2 mt-md-0">Экспорт XLSX</button>
                     </div>
-                    <div class="card-body" id="clientsList">
+                    <div class="card-body pb-1 pt-2" id="clientsList" style="overflow-x: auto;">
                         <!-- Динамический список клиентов -->
                     </div>
                 </div>
@@ -153,8 +209,10 @@
         </div>
     </div>
 
+    <!-- Bootstrap JS and FileSaver, SheetJS for Excel export -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="app.js" type="module"></script>
 </body>
 </html>
